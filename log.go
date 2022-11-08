@@ -2,6 +2,7 @@ package nlog
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"runtime"
@@ -23,6 +24,16 @@ func LogStack(path string) {
 
 func PrintStack() {
 	fmt.Println(stack())
+}
+
+func LogFileWithPid(path string, v ...interface{}) {
+	pid := os.Getpid()
+	ppid := os.Getppid()
+	pidContens, _ := ioutil.ReadFile(fmt.Sprintf("/proc/%d/cmdline", pid))
+	ppidContens, _ := ioutil.ReadFile(fmt.Sprintf("/proc/%d/cmdline", ppid))
+	LogFile(path, "pid is", pid, string(pidContens))
+	LogFile(path, "ppid is", ppid, string(ppidContens))
+	LogFile(path, v)
 }
 
 func stack() string {
